@@ -6,6 +6,16 @@ const MINUTE = 'minute';
 const SECOND = 'second';
 const MILLISECOND = 'millisecond';
 
+const VIEW_MAP = new Map([
+    [YEAR, 0],
+    [MONTH, 1],
+    [DAY, 2],
+    [HOUR, 3],
+    [MINUTE, 4],
+    [SECOND, 5],
+    [MILLISECOND, 6]
+]);
+
 export default {
     parse_duration(duration) {
         const regex = /([0-9]+)(y|m|d|h|min|s|ms)/gm;
@@ -175,8 +185,20 @@ export default {
         return new Date(...vals);
     },
 
-    now() {
-        return new Date();
+    now(view_mode) {
+        let view_mode_val = VIEW_MAP.get(view_mode.toLowerCase());
+        let date = new Date();
+        const vals = [
+            view_mode_val >= VIEW_MAP.get(YEAR) ? date.getFullYear() : 0,
+            view_mode_val >= VIEW_MAP.get(MONTH) ? date.getMonth() : 0,
+            view_mode_val >= VIEW_MAP.get(DAY) ? date.getDate() : 0,
+            view_mode_val >= VIEW_MAP.get(HOUR) ? date.getHours() : 0,
+            view_mode_val >= VIEW_MAP.get(MINUTE) ? date.getMinutes() : 0,
+            view_mode_val >= VIEW_MAP.get(SECOND) ? date.getSeconds() : 0,
+            view_mode_val >= VIEW_MAP.get(MILLISECOND) ? date.getMilliseconds() : 0,
+        ];
+
+        return new Date(...vals);
     },
 
     add(date, qty, scale) {

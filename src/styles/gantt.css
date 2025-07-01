@@ -185,6 +185,15 @@
         z-index: 999;
     }
 
+    & .target-highlight {
+        position: absolute;
+        border-color: var(--g-today-highlight);
+        width: 0px;
+        z-index: 999;
+        border-width: 1px;
+        border-style: dashed;
+    }
+
     & .current-ball-highlight {
         position: absolute;
         background: var(--g-today-highlight);

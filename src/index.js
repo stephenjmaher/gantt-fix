@@ -706,15 +706,15 @@ export default class Gantt {
      *
      * @returns Object containing the x-axis distance and date of the current date, or null if the current date is out of the gantt range.
      */
-    highlight_current() {
-        const res = this.get_closest_date();
+    highlight_current(target_date, current_date = true) {
+        const res = this.get_closest_date(target_date);
         if (!res) return;
 
         const [_, el] = res;
         el.classList.add('current-date-highlight');
 
         const diff_in_units = date_utils.diff(
-            new Date(),
+            target_date,
             this.gantt_start,
             this.config.unit,
         );
@@ -726,7 +726,7 @@ export default class Gantt {
             top: this.config.header_height,
             left,
             height: this.grid_height - this.config.header_height,
-            classes: 'current-highlight',
+            classes: (current_date == true ? 'current-highlight' : 'target-highlight'),
             append_to: this.$container,
         });
         this.$current_ball_highlight = this.create_el({
@@ -785,10 +785,15 @@ export default class Gantt {
         }
 
         const highlightDimensions = this.highlight_current(
-            this.config.view_mode,
+            date_utils.now(this.options.view_mode)
         );
 
-        if (!highlightDimensions) return;
+        if (this.options.target_date != null) {
+            const highlightTarget = this.highlight_current(
+                new Date(this.options.target_date), false
+            );
+        }
+
     }
 
     create_el({ left, top, width, height, id, classes, append_to, type }) {
@@ -1013,13 +1018,12 @@ export default class Gantt {
     }
 
     scroll_current() {
-        let res = this.get_closest_date();
+        let res = this.get_closest_date(new Date());
         if (res) this.set_scroll_position(res[0]);
     }
 
-    get_closest_date() {
-        let now = new Date();
-        if (now < this.gantt_start || now > this.gantt_end) return null;
+    get_closest_date(targetdate) {
+        if (targetdate < this.gantt_start || targetdate > this.gantt_end) return null;
 
         let current = new Date(),
             el = this.$container.querySelector(
