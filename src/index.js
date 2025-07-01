@@ -256,7 +256,7 @@ export default class Gantt {
 
     update_task(id, new_details) {
         let task = this.tasks.find((t) => t.id === id);
-        let bar = this.bars[task._index];
+        let bar = this.bars.find((b) => b.task.id === id);
         Object.assign(task, new_details);
         bar.refresh();
     }
