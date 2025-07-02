@@ -1025,7 +1025,7 @@ export default class Gantt {
     get_closest_date(targetdate) {
         if (targetdate < this.gantt_start || targetdate > this.gantt_end) return null;
 
-        let current = new Date(),
+        let current = targetdate,
             el = this.$container.querySelector(
                 '.date_' +
                     sanitize(
