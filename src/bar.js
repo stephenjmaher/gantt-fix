@@ -85,8 +85,8 @@ export default class Bar {
         this.compute_expected_progress();
         this.expected_progress_width =
             this.gantt.options.column_width *
-            this.duration *
-            (this.expected_progress / 100) || 0;
+                this.duration *
+                (this.expected_progress / 100) || 0;
     }
 
     draw() {
@@ -399,12 +399,13 @@ export default class Bar {
         $.on(this.group, 'touchstart', (e) => {
             if (!tapedTwice) {
                 tapedTwice = true;
-                setTimeout(function () { tapedTwice = false; }, 300);
+                setTimeout(function () {
+                    tapedTwice = false;
+                }, 300);
                 return false;
             }
             e.preventDefault();
             //action on double tap goes below
-
 
             if (this.action_completed) {
                 // just finished a move action, wait for a few seconds
@@ -524,10 +525,7 @@ export default class Bar {
 
         if (!changed) return;
 
-        this.gantt.trigger_event('task_index_change', [
-            this.task,
-            new_index,
-        ]);
+        this.gantt.trigger_event('task_index_change', [this.task, new_index]);
     }
 
     progress_changed() {
@@ -565,12 +563,10 @@ export default class Bar {
     compute_task_index() {
         const bar = this.$bar;
         let new_index =
-            (
-                bar.getY()
-                - this.gantt.config.header_height
-                - this.gantt.options.padding / 2
-            ) /
-                (bar.getHeight() + this.gantt.options.padding);
+            (bar.getY() -
+                this.gantt.config.header_height -
+                this.gantt.options.padding / 2) /
+            (bar.getHeight() + this.gantt.options.padding);
 
         return new_index;
     }
@@ -584,7 +580,7 @@ export default class Bar {
             this.gantt.config.ignored_positions.reduce((acc, val) => {
                 return acc + (val >= this.x && val <= progress_area);
             }, 0) *
-            this.gantt.config.column_width;
+                this.gantt.config.column_width;
         if (progress < 0) return 0;
         const total =
             this.$bar.getWidth() -
@@ -699,8 +695,8 @@ export default class Bar {
         this.$expected_bar_progress.setAttribute(
             'width',
             this.gantt.config.column_width *
-            this.actual_duration_raw *
-            (this.expected_progress / 100) || 0,
+                this.actual_duration_raw *
+                (this.expected_progress / 100) || 0,
         );
     }
 
@@ -732,12 +728,12 @@ export default class Bar {
                 img_mask.setAttribute('x', bar.getEndX() + padding);
                 label.setAttribute('x', bar.getEndX() + x_offset_label_img);
 
-                img.setAttribute('y', bar.getY() + bar.getHeight()/ 2);
-                img_mask.setAttribute('y', bar.getY() + bar.getHeight()/ 2);
-                label.setAttribute('y', bar.getY() + bar.getHeight()/ 2);
+                img.setAttribute('y', bar.getY() + bar.getHeight() / 2);
+                img_mask.setAttribute('y', bar.getY() + bar.getHeight() / 2);
+                label.setAttribute('y', bar.getY() + bar.getHeight() / 2);
             } else {
                 label.setAttribute('x', bar.getEndX() + padding);
-                label.setAttribute('y', bar.getY() + bar.getHeight()/ 2);
+                label.setAttribute('y', bar.getY() + bar.getHeight() / 2);
             }
         } else {
             label.classList.remove('big');
@@ -749,15 +745,15 @@ export default class Bar {
                     bar.getX() + barWidth / 2 + x_offset_label_img,
                 );
 
-                img.setAttribute('y', bar.getY() + bar.getHeight()/ 2);
-                img_mask.setAttribute('y', bar.getY() + bar.getHeight()/ 2);
-                label.setAttribute('y', bar.getY() + bar.getHeight()/ 2);
+                img.setAttribute('y', bar.getY() + bar.getHeight() / 2);
+                img_mask.setAttribute('y', bar.getY() + bar.getHeight() / 2);
+                label.setAttribute('y', bar.getY() + bar.getHeight() / 2);
             } else {
                 label.setAttribute(
                     'x',
                     bar.getX() + barWidth / 2 - labelWidth / 2,
                 );
-                label.setAttribute('y', bar.getY() + bar.getHeight()/ 2);
+                label.setAttribute('y', bar.getY() + bar.getHeight() / 2);
             }
         }
     }
@@ -778,11 +774,11 @@ export default class Bar {
             .querySelector('.handle.right')
             .setAttribute('y', bar.getY() + bar.getHeight() / 4);
         const handle = this.group.querySelector('.handle.progress');
-        handle
-            && handle.setAttribute('cx', this.$bar_progress.getEndX())
-            && handle.setAttribute(
+        handle &&
+            handle.setAttribute('cx', this.$bar_progress.getEndX()) &&
+            handle.setAttribute(
                 'cy',
-                this.$bar_progress.getY() + this.$bar_progress.getHeight() / 2
+                this.$bar_progress.getY() + this.$bar_progress.getHeight() / 2,
             );
     }
 

@@ -210,7 +210,9 @@ export default class Gantt {
             // the groups are the union of the specified groups and the groups
             // from the tasks.
             let groups = this.options?.groups ? this.options.groups : [];
-            this.groups = Array.from(new Set([...groups, ...this.tasks.map((t) => t.group)]));
+            this.groups = Array.from(
+                new Set([...groups, ...this.tasks.map((t) => t.group)]),
+            );
 
             // the index of the tasks depend on the groups array. This allows
             // for arbitrary naming of groups (not only numeric). Further, if
@@ -219,7 +221,6 @@ export default class Gantt {
             for (let task of this.tasks) {
                 task._index = this.groups.indexOf(task.group);
             }
-
         }
         this.setup_dependencies();
         this.setup_precedences();
@@ -468,7 +469,7 @@ export default class Gantt {
         for (let _ of this.groups) {
             createSVG('rect', {
                 x: 0,
-                y : row_y,
+                y: row_y,
                 width: row_width,
                 height: row_height,
                 class: 'grid-row',
@@ -476,9 +477,9 @@ export default class Gantt {
             });
 
             row_y += row_height;
-            
+
             if (row_y >= this.grid_height) {
-              break;
+                break;
             }
         }
     }
@@ -548,8 +549,8 @@ export default class Gantt {
         if (this.options.lines === 'none') return;
         let tick_x = 0;
         let tick_y = this.config.header_height;
-        let tick_height = (this.grid_height - this.config.header_height)*
-            this.groups.length;
+        let tick_height =
+            (this.grid_height - this.config.header_height) * this.groups.length;
 
         let $lines_layer = createSVG('g', {
             class: 'lines_layer',
@@ -571,9 +572,9 @@ export default class Gantt {
                     append_to: $lines_layer,
                 });
                 row_y += row_height;
-                
+
                 if (row_y >= this.grid_height) {
-                  break;
+                    break;
                 }
             }
         }
@@ -722,7 +723,8 @@ export default class Gantt {
             top: this.config.header_height,
             left,
             height: this.grid_height - this.config.header_height,
-            classes: (current_date == true ? 'current-highlight' : 'target-highlight'),
+            classes:
+                current_date == true ? 'current-highlight' : 'target-highlight',
             append_to: this.$container,
         });
         this.$current_ball_highlight = this.create_el({
@@ -781,15 +783,15 @@ export default class Gantt {
         }
 
         const highlightDimensions = this.highlight_current(
-            date_utils.now(this.options.view_mode)
+            date_utils.now(this.options.view_mode),
         );
 
         if (this.options.target_date != null) {
             const highlightTarget = this.highlight_current(
-                new Date(this.options.target_date), false
+                new Date(this.options.target_date),
+                false,
             );
         }
-
     }
 
     create_el({ left, top, width, height, id, classes, append_to, type }) {
@@ -1019,7 +1021,8 @@ export default class Gantt {
     }
 
     get_closest_date(targetdate) {
-        if (targetdate < this.gantt_start || targetdate > this.gantt_end) return null;
+        if (targetdate < this.gantt_start || targetdate > this.gantt_end)
+            return null;
 
         let current = targetdate,
             el = this.$container.querySelector(
@@ -1137,7 +1140,7 @@ export default class Gantt {
             if (
                 this.bar_being_dragged === false &&
                 (Math.abs((e.offsetX || e.layerX) - posx) > 10 ||
-                 Math.abs((e.offsetY || e.layerY) - posy) > 10)
+                    Math.abs((e.offsetY || e.layerY) - posy) > 10)
             )
                 this.bar_being_dragged = true;
         });
@@ -1163,12 +1166,18 @@ export default class Gantt {
             let parent_bar = this.get_bar(parent_bar_id);
             width_on_start = parent_bar.$bar.getWidth();
             let ids = [parent_bar_id];
-            if ((!this.options.maintain_dependency_position || !is_resizing_left)
-                && this.options.move_dependencies) {
+            if (
+                (!this.options.maintain_dependency_position ||
+                    !is_resizing_left) &&
+                this.options.move_dependencies
+            ) {
                 ids.push(...this.get_all_dependent_tasks(parent_bar_id));
             }
-            if ((!this.options.maintain_dependency_position || !is_resizing_right)
-                && this.options.move_precedences) {
+            if (
+                (!this.options.maintain_dependency_position ||
+                    !is_resizing_right) &&
+                this.options.move_precedences
+            ) {
                 ids.push(...this.get_all_precedent_tasks(parent_bar_id));
             }
             bars = ids.map((id) => this.get_bar(id));
@@ -1336,7 +1345,9 @@ export default class Gantt {
                 if (is_resizing_left) {
                     if (
                         !this.options.maintain_dependency_position ||
-                        width_on_start - ($bar.finaldx + this.get_unit_length()) > 0
+                        width_on_start -
+                            ($bar.finaldx + this.get_unit_length()) >
+                            0
                     ) {
                         if (parent_bar_id === bar.task.id) {
                             bar.update_bar_position({
@@ -1352,14 +1363,15 @@ export default class Gantt {
                 } else if (is_resizing_right) {
                     if (
                         !this.options.maintain_dependency_position ||
-                        width_on_start + ($bar.finaldx - this.get_unit_length()) > 0
+                        width_on_start +
+                            ($bar.finaldx - this.get_unit_length()) >
+                            0
                     ) {
                         if (parent_bar_id === bar.task.id) {
                             bar.update_bar_position({
                                 width: $bar.owidth + $bar.finaldx,
                             });
-                        }
-                        else if (this.options.maintain_dependency_position) {
+                        } else if (this.options.maintain_dependency_position) {
                             bar.update_bar_position({
                                 x: $bar.ox + $bar.finaldx,
                             });
@@ -1377,7 +1389,7 @@ export default class Gantt {
                         $bar.finaldy = this.get_snap_row_position(dy, $bar.oy);
                         bar.update_bar_position({
                             x: $bar.ox + $bar.finaldx,
-                            y: $bar.oy + $bar.finaldy
+                            y: $bar.oy + $bar.finaldy,
                         });
                     }
                 }
@@ -1567,12 +1579,7 @@ export default class Gantt {
         let snap_height = this.options.bar_height + this.options.padding;
         const rem = dy % snap_height;
 
-        let final_dy =
-            dy -
-            rem +
-            (rem < snap_height * 2
-                ? 0
-                : snap_height);
+        let final_dy = dy - rem + (rem < snap_height * 2 ? 0 : snap_height);
         let final_pos = oy + final_dy;
 
         return final_pos - oy;

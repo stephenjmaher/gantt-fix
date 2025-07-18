@@ -24,7 +24,7 @@ export default class Arrow {
         start_x -= 10;
 
         let start_y =
-            this.from_task.$bar.getY() + this.gantt.options.bar_height
+            this.from_task.$bar.getY() + this.gantt.options.bar_height;
 
         let end_x = this.to_task.$bar.getX() - 13;
         let end_y =

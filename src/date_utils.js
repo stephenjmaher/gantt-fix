@@ -13,7 +13,7 @@ const VIEW_MAP = new Map([
     [HOUR, 3],
     [MINUTE, 4],
     [SECOND, 5],
-    [MILLISECOND, 6]
+    [MILLISECOND, 6],
 ]);
 
 export default {
@@ -195,7 +195,9 @@ export default {
             view_mode_val >= VIEW_MAP.get(HOUR) ? date.getHours() : 0,
             view_mode_val >= VIEW_MAP.get(MINUTE) ? date.getMinutes() : 0,
             view_mode_val >= VIEW_MAP.get(SECOND) ? date.getSeconds() : 0,
-            view_mode_val >= VIEW_MAP.get(MILLISECOND) ? date.getMilliseconds() : 0,
+            view_mode_val >= VIEW_MAP.get(MILLISECOND)
+                ? date.getMilliseconds()
+                : 0,
         ];
 
         return new Date(...vals);
