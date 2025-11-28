@@ -120,6 +120,10 @@ const DEFAULT_OPTIONS = {
     lower_header_height: 30,
     snap_at: null,
     infinite_padding: true,
+    enable_left_sidebar: false,
+    left_sidebar_config: {
+        width: 120,
+    },
     holidays: { 'var(--g-weekend-highlight-color)': 'weekend' },
     ignore: [],
     language: 'en',

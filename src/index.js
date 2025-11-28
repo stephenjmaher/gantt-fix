@@ -45,11 +45,16 @@ export default class Gantt {
             );
         }
 
+        this.$main_wrapper = this.create_el({
+            classes: 'main-wrapper',
+            append_to: wrapper_element,
+        });
+
         // svg element
         if (!svg_element) {
             // create it
             this.$svg = createSVG('svg', {
-                append_to: wrapper_element,
+                append_to: this.$main_wrapper,
                 class: 'gantt',
             });
         } else {
@@ -389,6 +394,7 @@ export default class Gantt {
         this.make_bars();
         this.make_arrows();
         this.map_arrows_on_bars();
+        this.fill_left_sidebar();
         this.set_dimensions();
         this.set_scroll_position(this.options.scroll_to);
     }
@@ -419,6 +425,8 @@ export default class Gantt {
         this.make_grid_background();
         this.make_grid_rows();
         this.make_grid_header();
+        this.make_left_sidebar();
+        this.fill_left_sidebar();
         this.make_side_header();
     }
 
@@ -429,6 +437,7 @@ export default class Gantt {
 
     make_grid_background() {
         const grid_width = this.dates.length * this.config.column_width;
+        const sidebar_items = this.groups;
         const grid_height = Math.max(
             this.config.header_height +
                 this.options.padding +
@@ -499,6 +508,27 @@ export default class Gantt {
             classes: 'lower-header',
             append_to: this.$header,
         });
+    }
+
+    make_left_sidebar() {
+        if (!this.options.enable_left_sidebar) {
+            return;
+        }
+
+        this.$left_sidebar_fixer_container = this.create_el({
+            width: this.options.left_sidebar_config.width,
+            classes: 'left-sidebar-fixer',
+            prepend_to: this.$main_wrapper,
+        });
+
+        this.$left_sidebar_container = this.create_el({
+            width: this.options.left_sidebar_config.width,
+            classes: 'gantt-left-sidebar',
+            append_to: this.$main_wrapper,
+        });
+
+        this.$left_sidebar_fixer_container.style.flexBasis =
+            this.options.left_sidebar_config.width + 'px';
     }
 
     make_side_header() {
@@ -794,7 +824,7 @@ export default class Gantt {
         }
     }
 
-    create_el({ left, top, width, height, id, classes, append_to, type }) {
+    create_el({ left, top, width, height, id, classes, append_to, prepend_to, type }) {
         let $el = document.createElement(type || 'div');
         for (let cls of classes.split(' ')) $el.classList.add(cls);
         $el.style.top = top + 'px';
@@ -803,6 +833,7 @@ export default class Gantt {
         if (width) $el.style.width = width + 'px';
         if (height) $el.style.height = height + 'px';
         if (append_to) append_to.appendChild($el);
+        if (prepend_to) prepend_to.prepend($el);
         return $el;
     }
 
@@ -894,6 +925,65 @@ export default class Gantt {
             lower_y: this.options.upper_header_height + 5,
         };
     }
+
+    fill_left_sidebar() {
+        if (!this.options.enable_left_sidebar) {
+            return;
+        }
+
+        if (!this.$left_sidebar_container) {
+            return;
+        }
+
+        // Clear existing rows to prevent duplicates
+        this.$left_sidebar_container.innerHTML = '';
+
+        // Get unique groups - if this.groups contains tasks, extract unique group names
+        let sidebar_items;
+        if (this.options?.enable_grouping) {
+            // When grouping is enabled, this.groups is already an array of unique group names
+            sidebar_items = this.groups;
+        } else {
+            // When grouping is disabled, extract unique group names from tasks
+            sidebar_items = Array.from(
+                new Set(this.tasks.map((t) => t.group).filter(Boolean))
+            );
+        }
+
+        sidebar_items.forEach((item, index) => {
+            const row = this.create_el({
+                classes: 'gantt-left-sidebar-row',
+                append_to: this.$left_sidebar_container,
+            });
+            // Handle strings, numbers, objects, and undefined
+            row.textContent = typeof item === 'string' || typeof item === 'number'
+                ? String(item)
+                : (item?.name || item || '');
+
+            row.style.height =
+                this.options.bar_height + this.options.padding + 'px';
+        });
+
+        // Set sidebar container height to match grid content area
+        if (this.grid_height) {
+            const sidebar_height = this.grid_height - this.config.header_height;
+            this.$left_sidebar_container.style.height = sidebar_height + 'px';
+        }
+
+        // Calculate the correct offset for the empty row
+        // Grid content height = padding + (bar_height + padding) * groups.length - 10
+        // Sidebar rows height = (bar_height + padding) * groups.length
+        // Empty row should fill: padding - 10
+        const emptyRowHeight = this.options.padding - 10;
+        const emptyRow = this.create_el({
+            classes: 'gantt-left-sidebar-row',
+            append_to: this.$left_sidebar_container,
+        });
+
+        // Add empty row to match grid content area height
+        emptyRow.style.height = emptyRowHeight + 'px';
+    }
+
 
     make_bars() {
         this.bars = this.tasks.map((task) => {
@@ -1676,6 +1766,8 @@ export default class Gantt {
         this.$side_header?.remove?.();
         this.$current_highlight?.remove?.();
         this.$extras?.remove?.();
+        this.$left_sidebar_container?.remove?.();
+        this.$left_sidebar_fixer_container?.remove?.();
         this.popup?.hide?.();
     }
 }
